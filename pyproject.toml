@@ -97,6 +97,7 @@ setup = ["--wrap-mode=forcefallback", "-Dimpl_py=enabled", "-Dimpl_cxx=disabled"
 
 [tool.ruff]
 line-length = 125
+required-version = ">=0.15,<0.16"
 
 [tool.ruff.lint]
 select = [

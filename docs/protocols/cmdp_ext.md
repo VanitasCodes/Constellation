@@ -55,18 +55,18 @@ A Matrix stores a dense 2D array of typed elements in row-major order.
 The extension payload SHALL have the following layout:
 
 ```text
-+--------+--------+--------+--------+--------+--------+--------+--------+--------+========+
-| dtype  |             rows (uint32 LE)      |             cols (uint32 LE)      |  data  |
-+--------+--------+--------+--------+--------+--------+--------+--------+--------+========+
++--------+--------+--------+--------+--------+========+
+| dtype  |  rows (uint16 LE)  |  cols (uint16 LE)  |  data  |
++--------+--------+--------+--------+--------+========+
 ```
 
 The `dtype` field SHALL be a 1-OCTET element type tag as defined above.
-The `rows` and `cols` fields SHALL be uint32 little-endian values representing the matrix dimensions.
+The `rows` and `cols` fields SHALL be uint16 little-endian values representing the matrix dimensions.
 The `data` field SHALL contain `rows * cols * sizeof(dtype)` bytes of element data in row-major little-endian order.
 
-The total payload size SHALL be `1 + 4 + 4 + rows * cols * sizeof(dtype)` bytes.
+The total payload size SHALL be `1 + 2 + 2 + rows * cols * sizeof(dtype)` bytes.
 The element at position `(row, col)` is located at byte offset `(row * cols + col) * sizeof(dtype)` within `data`.
-An empty matrix (zero rows or zero columns) SHALL have a 9-byte payload with no data section.
+An empty matrix (zero rows or zero columns) SHALL have a 5-byte payload with no data section.
 
 ### Histogram1D (ext type 0x02)
 
@@ -79,8 +79,8 @@ The extension payload SHALL have the following layout:
 +--------+--------+--------+--------+--------+--------+--------+--------+
 |                          end (float64 LE)                             |
 +--------+--------+--------+--------+--------+--------+--------+--------+
-| dtype  |          nbins (uint32 LE)        |
-+--------+--------+--------+--------+--------+
+| dtype  |  nbins (uint16 LE)  |
++--------+--------+--------+
 |              bins (nbins * sizeof(dtype) LE)                          |
 +========+
 ```
@@ -88,10 +88,10 @@ The extension payload SHALL have the following layout:
 The `start` field SHALL be a float64 little-endian lower edge of the first bin.
 The `end` field SHALL be a float64 little-endian upper edge of the last bin.
 The `dtype` field SHALL be a 1-OCTET element type tag as defined above.
-The `nbins` field SHALL be a uint32 little-endian bin count.
+The `nbins` field SHALL be a uint16 little-endian bin count.
 The `bins` field SHALL contain `nbins * sizeof(dtype)` bytes of little-endian bin counts.
 
-The total payload size SHALL be `8 + 8 + 1 + 4 + nbins * sizeof(dtype)` bytes.
+The total payload size SHALL be `8 + 8 + 1 + 2 + nbins * sizeof(dtype)` bytes.
 Bin `i` (0-indexed) spans the interval `[start + i * (end - start) / nbins, start + (i+1) * (end - start) / nbins)`.
 Underflow and overflow bins are not transmitted.
 

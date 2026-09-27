@@ -18,6 +18,7 @@ core_src = files(
   'message/CHP1Message.cpp',
   'message/CMDP1Message.cpp',
   'message/CSCP1Message.cpp',
+  'metrics/DQMTypes.cpp',
   'metrics/Metric.cpp',
   'metrics/MetricsManager.cpp',
   'networking/asio_helpers.cpp',
@@ -28,7 +29,7 @@ core_src = files(
 
 core_lib = library(
   'ConstellationCore',
-  sources: [core_src, build_hpp],
+  sources: core_src,
   include_directories: constellation_inc,
   dependencies: constellation_private_deps + [
     asio_dep,
@@ -118,6 +119,9 @@ install_headers(
 
 install_headers(
   'metrics/exceptions.hpp',
+  'metrics/DQMTypes.hpp',
+  'metrics/DQMTypes.ipp',
+  'metrics/MetricData.hpp',
   'metrics/Metric.hpp',
   'metrics/MetricsManager.hpp',
   'metrics/MetricsManager.ipp',

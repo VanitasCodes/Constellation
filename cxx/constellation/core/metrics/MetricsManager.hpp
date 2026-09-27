@@ -26,6 +26,7 @@
 #include "constellation/core/config/value_types.hpp"
 #include "constellation/core/log/Logger.hpp"
 #include "constellation/core/metrics/Metric.hpp"
+#include "constellation/core/metrics/MetricData.hpp"
 #include "constellation/core/utils/string_hash_map.hpp"
 #include "constellation/core/utils/timers.hpp"
 
@@ -181,7 +182,7 @@ namespace constellation::metrics {
         std::mutex timed_metrics_mutex_;
 
         // Queue for manually triggered metrics
-        std::queue<std::pair<std::string, config::Scalar>> triggered_queue_;
+        std::queue<std::pair<std::string, MetricData>> triggered_queue_;
         std::mutex triggered_queue_mutex_;
         std::condition_variable cv_;
 

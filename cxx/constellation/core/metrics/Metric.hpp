@@ -20,6 +20,7 @@
 #include "constellation/build.hpp"
 #include "constellation/core/config/value_types.hpp"
 #include "constellation/core/message/PayloadBuffer.hpp"
+#include "constellation/core/metrics/MetricData.hpp"
 
 namespace constellation::metrics {
 
@@ -83,7 +84,7 @@ namespace constellation::metrics {
                     std::string unit,
                     std::string description,
                     std::chrono::nanoseconds interval,
-                    std::function<std::optional<config::Scalar>()> value_callback)
+                    std::function<std::optional<MetricData>()> value_callback)
             : Metric(std::move(name), std::move(unit), std::move(description)), interval_(interval),
               value_callback_(std::move(value_callback)) {}
 
@@ -97,11 +98,11 @@ namespace constellation::metrics {
          * @brief Evaluate the value callback to get the current value of the metric
          * @return Optional with current value or no value
          */
-        std::optional<config::Scalar> currentValue() { return value_callback_(); }
+        std::optional<MetricData> currentValue() { return value_callback_(); }
 
     private:
         std::chrono::nanoseconds interval_;
-        std::function<std::optional<config::Scalar>()> value_callback_;
+        std::function<std::optional<MetricData>()> value_callback_;
     };
 
     /**
@@ -115,7 +116,7 @@ namespace constellation::metrics {
          * @param metric Shared pointer to a metric
          * @param value Value corresponding to the metric
          */
-        MetricValue(std::shared_ptr<Metric> metric, config::Scalar&& value)
+        MetricValue(std::shared_ptr<Metric> metric, MetricData&& value)
             : metric_(std::move(metric)), value_(std::move(value)) {}
 
         MetricValue() = default;
@@ -130,7 +131,7 @@ namespace constellation::metrics {
          * @brief Obtain the metric value
          * @return Value of the metric
          */
-        const config::Scalar& getValue() const { return value_; }
+        const MetricData& getValue() const { return value_; }
 
         /** Assemble metric via msgpack for message payload */
         CNSTLN_API message::PayloadBuffer assemble() const;
@@ -140,7 +141,7 @@ namespace constellation::metrics {
 
     private:
         std::shared_ptr<Metric> metric_;
-        config::Scalar value_;
+        MetricData value_;
     };
 
 } // namespace constellation::metrics

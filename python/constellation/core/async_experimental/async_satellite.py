@@ -332,13 +332,13 @@ class AsyncSatellite(
 
         self._async_task_queue: asyncio.Queue = asyncio.Queue()
 
+        if hasattr(self, "do_reconfigure"):
+            self.add_cscp_command("reconfigure", allowed_states=[SatelliteState.ORBIT], unpack_list=False)
+
         # Register CHIRP services and request heartbeats
         self.register_service(CHIRPServiceIdentifier.CONTROL, self.cmd_port)
         self.register_service(CHIRPServiceIdentifier.HEARTBEAT, self.hb_port)
         self.register_service(CHIRPServiceIdentifier.MONITORING, self.mon_port)
-
-        if hasattr(self, "do_reconfigure"):
-            self.add_cscp_command("reconfigure", allowed_states=[SatelliteState.ORBIT], unpack_list=False)
 
         self.register_metric("RUN_ID", "", "Current run identifier. Updated when changed.")
         self.register_metric("STATE", "", "Current satellite state. Updated when changed.")

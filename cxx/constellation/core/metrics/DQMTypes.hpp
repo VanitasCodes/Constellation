@@ -38,9 +38,6 @@ namespace constellation::metrics {
     /// Byte size of a single element for a given DType
     CNSTLN_API std::size_t dtype_size(DType dtype);
 
-    /// Human-readable name for a DType
-    CNSTLN_API std::string dtype_name(DType dtype);
-
     /**
      * @brief Dense 2D matrix of typed numeric elements in row-major little-endian layout
      */

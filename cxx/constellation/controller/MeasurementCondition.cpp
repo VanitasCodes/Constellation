@@ -24,7 +24,7 @@
 #include "constellation/core/log/log.hpp"
 #include "constellation/core/log/Logger.hpp"
 #include "constellation/core/message/CMDP1Message.hpp"
-#include "constellation/core/metrics/MetricData.hpp"
+#include "constellation/core/metrics/Metric.hpp"
 #include "constellation/core/utils/string.hpp"
 #include "constellation/core/utils/timers.hpp"
 #include "constellation/listener/StatListener.hpp"

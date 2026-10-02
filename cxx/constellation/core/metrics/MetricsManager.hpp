@@ -26,7 +26,6 @@
 #include "constellation/core/config/value_types.hpp"
 #include "constellation/core/log/Logger.hpp"
 #include "constellation/core/metrics/Metric.hpp"
-#include "constellation/core/metrics/MetricData.hpp"
 #include "constellation/core/utils/string_hash_map.hpp"
 #include "constellation/core/utils/timers.hpp"
 

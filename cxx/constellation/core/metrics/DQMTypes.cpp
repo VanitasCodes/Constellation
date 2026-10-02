@@ -18,6 +18,8 @@
 
 #include <msgpack.hpp>
 
+#include "constellation/core/utils/enum.hpp"
+
 using namespace constellation::metrics;
 
 std::size_t constellation::metrics::dtype_size(DType dtype) {
@@ -30,18 +32,8 @@ std::size_t constellation::metrics::dtype_size(DType dtype) {
     }
 }
 
-std::string constellation::metrics::dtype_name(DType dtype) {
-    switch(dtype) {
-    case DType::UINT32: return "uint32";
-    case DType::UINT64: return "uint64";
-    case DType::FLOAT32: return "float32";
-    case DType::FLOAT64: return "float64";
-    default: return "unknown";
-    }
-}
-
 std::string Matrix::to_string() const {
-    return "Matrix(" + std::to_string(rows_) + "x" + std::to_string(cols_) + ", " + dtype_name(dtype_) + ")";
+    return "Matrix(" + std::to_string(rows_) + "x" + std::to_string(cols_) + ", " + utils::enum_name(dtype_) + ")";
 }
 
 void Matrix::msgpack_pack(msgpack::packer<msgpack::sbuffer>& packer) const {
@@ -96,8 +88,8 @@ Matrix Matrix::msgpack_unpack(const msgpack::object& obj) {
 }
 
 std::string Histogram1D::to_string() const {
-    return "Histogram1D(" + std::to_string(nbins_) + " bins, " + dtype_name(dtype_) + ", [" + std::to_string(start_) + ", " +
-           std::to_string(end_) + "])";
+    return "Histogram1D(" + std::to_string(nbins_) + " bins, " + utils::enum_name(dtype_) + ", [" + std::to_string(start_) +
+           ", " + std::to_string(end_) + "])";
 }
 
 void Histogram1D::msgpack_pack(msgpack::packer<msgpack::sbuffer>& packer) const {

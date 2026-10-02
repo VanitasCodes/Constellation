@@ -16,11 +16,38 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 
 #include "constellation/build.hpp"
 #include "constellation/core/config/value_types.hpp"
 #include "constellation/core/message/PayloadBuffer.hpp"
-#include "constellation/core/metrics/MetricData.hpp"
+#include "constellation/core/metrics/DQMTypes.hpp"
+
+namespace constellation::metrics {
+
+    using MetricDataVariant = std::variant<config::Scalar, Matrix, Histogram1D, Histogram2D>;
+
+    /**
+     * @brief Variant holding a scalar or structured metric value
+     */
+    class MetricData : public MetricDataVariant {
+    public:
+        using MetricDataVariant::MetricDataVariant;
+        using MetricDataVariant::operator=;
+
+        /**
+         * @brief Get metric data in requested type
+         *
+         * @return Value in the type of the requested template parameter
+         * @throws std::bad_variant_access If the held type does not match the requested type
+         */
+        template <typename T> const T& get() const { return std::get<T>(*this); }
+
+        /** @overload */
+        template <typename T> T& get() { return std::get<T>(*this); }
+    };
+
+} // namespace constellation::metrics
 
 namespace constellation::metrics {
 

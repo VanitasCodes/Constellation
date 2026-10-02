@@ -29,7 +29,7 @@ core_src = files(
 
 core_lib = library(
   'ConstellationCore',
-  sources: core_src,
+  sources: [core_src, build_hpp],
   include_directories: constellation_inc,
   dependencies: constellation_private_deps + [
     asio_dep,
@@ -121,7 +121,6 @@ install_headers(
   'metrics/exceptions.hpp',
   'metrics/DQMTypes.hpp',
   'metrics/DQMTypes.ipp',
-  'metrics/MetricData.hpp',
   'metrics/Metric.hpp',
   'metrics/MetricsManager.hpp',
   'metrics/MetricsManager.ipp',

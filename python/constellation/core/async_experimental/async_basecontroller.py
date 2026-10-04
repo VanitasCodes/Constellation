@@ -243,6 +243,15 @@ class AsyncBaseController(AsyncMonitoringListener, AsyncHeartbeatChecker):
                 self._cscp_request(sock, "get_commands", None, lock),
                 timeout=5.0,
             )
+
+            # get list of hidden commands
+            try:
+                hidden_cmds_msg = await asyncio.wait_for(
+                    self._cscp_request(sock, "_get_commands", None, lock),
+                    timeout=5.0,
+                )
+            except Exception:
+                hidden_cmds_msg = None
         except asyncio.CancelledError:
             sock.close()
             raise
@@ -252,7 +261,10 @@ class AsyncBaseController(AsyncMonitoringListener, AsyncHeartbeatChecker):
         self._transmitters[canonical_name] = sock
         self._transmitter_uuids[uuid] = canonical_name
         self._cscp_locks[canonical_name] = lock
-        self._satellite_commands[canonical_name] = cmds_msg.payload if isinstance(cmds_msg.payload, dict) else {}
+        commands = cmds_msg.payload if isinstance(cmds_msg.payload, dict) else {}
+        if hidden_cmds_msg is not None and isinstance(hidden_cmds_msg.payload, dict):
+            commands.update(hidden_cmds_msg.payload)
+        self._satellite_commands[canonical_name] = commands
         self._on_satellite_update(canonical_name, SatelliteUpdate.ADDED)
 
     def _cleanup_transmitter(self, satellite: UUID | str) -> None:

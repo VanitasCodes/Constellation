@@ -43,6 +43,10 @@ class AsyncSatelliteStateHandler(AsyncHeartbeatChecker, AsyncCSCPReceiver):
     for task dispatch.
     """
 
+    def __init_subclass__(cls, version=None, **kwargs):
+        super().__init_subclass__(**kwargs)
+        cls._satellite_version = version if version is not None else __version__
+
     def __init__(self, **kwds: Any) -> None:
         self.fsm = SatelliteFSM()
         super().__init__(**kwds)
@@ -330,6 +334,10 @@ class AsyncSatellite(
         self.run_degraded: bool = False
         self._config = Configuration()
 
+        # Fall back to framework version if not set by __init_subclass__
+        if not hasattr(self, "_satellite_version"):
+            self._satellite_version = __version__
+
         self._async_task_queue: asyncio.Queue = asyncio.Queue()
 
         if hasattr(self, "do_reconfigure"):
@@ -395,6 +403,8 @@ class AsyncSatellite(
             while not stop.is_set():
                 try:
                     task = await asyncio.wait_for(self._async_task_queue.get(), timeout=0.5)
+                    if task is None:
+                        break
                     callback = task[0]
                     args = task[1]
                     try:
@@ -650,6 +660,11 @@ class AsyncSatellite(
 
     @cscp_requestable()
     def get_version(self) -> tuple[str, Any, dict[str, Any]]:
+        """Get Satellite version."""
+        return self._satellite_version, None, {}
+
+    @cscp_requestable()
+    def get_cnstln_version(self) -> tuple[str, Any, dict[str, Any]]:
         """Get Constellation version."""
         return __version__, None, {}
 
@@ -687,7 +702,7 @@ class AsyncSatellite(
 class SatelliteArgumentParser(ConstellationArgumentParser):
     """Customized Argument parser providing common Satellite options."""
 
-    def __init__(self, *args: Any, **kwargs: Any):
+    def __init__(self, *args: Any, version: str | None = None, **kwargs: Any):
         super().__init__(*args, **kwargs)
         self.network.add_argument(
             "--cmd-port",
@@ -716,3 +731,6 @@ class SatelliteArgumentParser(ConstellationArgumentParser):
             "Constellation Heartbeat Protocol. "
             "A random port will be selected if none is specified.",
         )
+        if version is not None and hasattr(self, "version_action") and hasattr(self.version_action, "version"):
+            vversion = f"v{version}" if version[0].isdigit() else version
+            self.version_action.version = f"Satellite {vversion}, " + self.version_action.version

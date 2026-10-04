@@ -7,6 +7,7 @@ Async heartbeat receiver and checker.
 
 import asyncio
 import time
+import logging
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -66,6 +67,7 @@ class AsyncHeartbeatReceiver:
         self._on_stale = on_stale
         self._on_mark_degraded = on_mark_degraded
         self._on_heartbeat_interrupt = on_heartbeat_interrupt
+        self._log = logging.getLogger("LINK")
 
         self._states: dict[UUID, HeartbeatState] = {}
         self._name_to_uuid: case_insensitive_dict[UUID] = case_insensitive_dict()
@@ -214,9 +216,11 @@ class AsyncHeartbeatReceiver:
             if hb is None:
                 continue
             msg = f"No signs of life detected anymore from {hb.name}"
+            self._log.warning(msg)
             if hb.role.role_requires(CHPMessageFlags.MARK_DEGRADED) and self._on_mark_degraded:
                 self._on_mark_degraded(msg)
             if hb.role.role_requires(CHPMessageFlags.TRIGGER_INTERRUPT) and self._on_heartbeat_interrupt:
+                self._log.info(f"{hb.name} unresponsive causing interrupt callback to be called")
                 self._on_heartbeat_interrupt(msg)
             self.remove_satellite(uuid)
             if self._on_stale:
